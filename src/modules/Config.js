@@ -9,7 +9,9 @@ const ConfigPath = '../../config.yaml';
 class Config {
     constructor() {
         this.config = {};
-        this.get()
+        this.debounceTimers = new Map();
+        this.watchConfigFile();
+        this.get();
     }
 
     async get() {
@@ -20,6 +22,21 @@ class Config {
         } catch (e) {
             new Konsole().error('Error reading config file:', e);
         }
+    }
+
+    watchConfigFile() {
+        fs.watch(path.join(__dirname, ConfigPath), (eventType, filename) => {
+            if (eventType === 'change') {
+                if (this.debounceTimers.has(filename)) {
+                    clearTimeout(this.debounceTimers.get(filename));
+                }
+                this.debounceTimers.set(filename, setTimeout(() => {
+                    new Konsole().log('Config file changed, reloading...');
+                    this.get();
+                    this.debounceTimers.delete(filename);
+                }, 100));
+            }
+        });
     }
 }
 

@@ -1,8 +1,8 @@
 const ModuleLoader = require('./util/moduleLoader');
-const Konsole = require('./util/Konsole');
-const processController = require('./util/processexit')()
-const konsole = new Konsole()
+const ProcessExit = require('./util/processexit');
+const Client = require('./util/client');
 
-const client = "balls"
+const client = new Client();
 
-new ModuleLoader('../modules', client, konsole).loadModules();
+new ProcessExit();
+new ModuleLoader('../modules', client).loadModules();

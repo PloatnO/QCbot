@@ -1,11 +1,11 @@
 const fs = require('fs');
 const path = require('path');
-const Konsole = require('./Konsole');
+const Konsole = require('../modules/Konsole');
 
 class ModuleLoader {
-    constructor(modulesDir, client, konsole) {
+    constructor(modulesDir, client) {
         this.client = client;
-        this.konsole = konsole;
+        this.konsole = new Konsole();
         this.modulesDir = path.join(__dirname, modulesDir);
         this.modules = new Map();
         this.debounceTimers = new Map();

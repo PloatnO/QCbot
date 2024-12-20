@@ -1,33 +1,24 @@
-const Konsole = require('./Konsole')
-module.exports = () => {
+const Konsole = require('../modules/Konsole');
+
+module.exports = class Test {
+    constructor() {
+        this.init();
+    }
+
     console = {
         log: () => {},
         warn: () => {},
         error: () => {},
         debug: () => {}
     }
-    process.on('exit', (code) => {
-        process.stdout.write(Konsole.COLORS.RESET);
-    });
 
-    process.on('SIGINT', () => {
-        process.stdout.write(Konsole.COLORS.RESET);
-        process.exit();
-    });
+    init() {
+        const resetColor = () => process.stdout.write(Konsole.COLORS.RESET+'');
 
-    process.on('SIGTERM', () => {
-        process.stdout.write(Konsole.COLORS.RESET);
-        process.exit();
-    });
-
-    process.on('uncaughtException', (err) => {
-        process.stdout.write(Konsole.COLORS.RESET);
-        process.exit(1);
-    });
-
-    process.on('beforeExit', (code) => {
-        process.stdout.write(Konsole.COLORS.RESET);
-    });
-
-    
+        process.on('exit', resetColor);
+        process.on('SIGINT', () => { resetColor(); process.exit(); });
+        process.on('SIGTERM', () => { resetColor(); process.exit(); });
+        process.on('uncaughtException', (err) => { new Konsole().error(err.stack) ;resetColor(); process.exit(1); });
+        process.on('beforeExit', resetColor);
+    }
 };

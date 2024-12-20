@@ -1,0 +1,15 @@
+{
+  "name": "qc-client",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "start": "echo \"QC: Started Client\" && node ./src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}

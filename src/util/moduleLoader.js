@@ -1,14 +1,21 @@
 const fs = require('fs');
 const path = require('path');
-const Konsole = require('../modules/Konsole');
+const Konsole = require('./Konsole');
+const Client = require('./client');
 
 class ModuleLoader {
-    constructor(modulesDir, client) {
-        this.client = client;
-        this.konsole = new Konsole();
-        this.modulesDir = path.join(__dirname, modulesDir);
+    constructor(modulesDir) {
+        this.modulesDirTEMP = modulesDir;
+        this.init()
+    }
+
+    async init() {
+        this.client = await new Client().init()
+        this.konsole = new Konsole(this.client);
+        this.modulesDir = path.join(__dirname, this.modulesDirTEMP);
         this.modules = new Map();
         this.debounceTimers = new Map();
+        this.loadModules();
     }
 
     loadModules() {

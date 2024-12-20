@@ -1,2 +1,9 @@
 user:
-  name: "John Doe"
+  name: "player"
+
+server:
+  host: play.kaboom.pw
+  port: 25565
+
+konsole:
+  prefix: .

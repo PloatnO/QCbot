@@ -1,4 +1,4 @@
-const Konsole = require('../modules/Konsole');
+const Konsole = require('./Konsole');
 
 module.exports = class Test {
     constructor() {

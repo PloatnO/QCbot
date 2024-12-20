@@ -4,7 +4,7 @@ let rl;
 
 class Konsole {
   constructor(context) {
-      if (context) return;
+      if (!context) return;
       if (!rl) {
        rl = readline.createInterface({
         input: process.stdin,
@@ -13,20 +13,25 @@ class Konsole {
        });
       }
       this.rl = rl;
+      this.client = context
       this.init();
    }
 
   async init() {
       this.rl.removeAllListeners('line');
       this.rl.on('line', (input) => {
-      this.log(`You entered: ${input}`);
+        if (this.client) {
+          this.client.chat(input)
+        }
       });
   }
 
   refreshLine(...args) {
+    try {
       rl.output.write("\x1b[2K\r"+Konsole.COLORS.RESET);
       process.stdout.write(`${Konsole.COLORS.RESET}${args.toString()}${Konsole.COLORS.RESET}\n`);
       rl._refreshLine();
+    } catch {}
   }
 
   log(...args) {

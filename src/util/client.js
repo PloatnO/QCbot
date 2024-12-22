@@ -1,6 +1,8 @@
 const Config = require('../modules/Config');
+const Core = require('./Core');
 const Konsole = require('./Konsole');
 const protocol = require('minecraft-protocol')
+const parser = require('../util/parser')
 
 let client = null;
 
@@ -19,10 +21,11 @@ class Client {
             host: this.config.server.host,
             port: this.config.server.port,
             username: this.config.user.name,
-            version: '1.20.2',
+            version: '1.20.4',
             auth: 'offline'
         });
         this.client = client
+        parser.inject(this.client)
 
         this.client['konsole'] = {
             log: (msg) => new Konsole().log(msg),
@@ -31,9 +34,28 @@ class Client {
             debug: (msg) => new Konsole().debug(msg)
         }
 
-        new Konsole().log('Client Started');
+        this.client.options = {
+            actionbar: false,
+            bossbar: false,
+            title: false
+        }
+        coreInit(this.client)
         return this.client
     }
+}
+
+function coreInit(client) {
+    setTimeout( async () => {
+        if (client?.pos && typeof client.pos === 'object') {
+            client.core = new Core(client)
+            client.write('settings', {
+                locale: 'en_us',
+                skinParts: 255
+            })
+        } else {
+            coreInit(client)
+        }
+    }, 275);
 }
 
 module.exports = Client

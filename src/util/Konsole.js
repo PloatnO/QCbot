@@ -21,8 +21,11 @@ class Konsole {
       this.rl.removeAllListeners('line');
       this.rl.on('line', (input) => {
         if (this.client) {
-          this.client.chat(input)
+          this.client.emit('konsole:input', {
+            input: input,
+          });
         }
+        this.rl.prompt();
       });
   }
 

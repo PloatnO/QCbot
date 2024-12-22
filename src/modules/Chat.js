@@ -1,4 +1,4 @@
-const ChatMessage = require('prismarine-chat')('1.20.2')
+const ChatMessage = require('prismarine-chat')('1.20.4')
 
 class Chat {
     constructor(context) {
@@ -8,14 +8,38 @@ class Chat {
     }
 
     async init() {
-        this.client.on('system_chat', (packet) => {
-            const message = packet.content
-            const chat = ChatMessage.fromNotch(message).toAnsi()
-            this.konsole.debug(chat)
+        this.client.on('custom_systemChat', (packet) => {
+            if (packet.includes("Command set:")) return
+            this.konsole.debug(packet)
         })
-    }
 
-    
+        this.client.on('custom_playerChat',(packet)=>{
+            this.konsole.debug(packet)
+        })
+
+        this.client.on('custom_profilelessChat',(packet)=>{
+            this.konsole.debug(packet)
+        })
+
+        this.client.on('custom_actionBar',(packet)=>{
+            if (this.client.options.actionbar === true) {
+                this.konsole.debug(packet)
+            }
+        })
+
+        this.client.on('custom_title',(packet)=>{
+            if (this.client.options.title === true) {
+                this.konsole.debug(packet)
+            }
+        })
+
+        this.client.on('custom_bossBar',(packet)=>{
+            if (this.client.options.bossbar === true) {
+                this.konsole.debug(packet)
+            }
+        })
+        
+    }
 }
 
 

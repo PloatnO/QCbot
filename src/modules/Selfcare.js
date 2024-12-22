@@ -60,7 +60,7 @@ class Selfcare {
                 gameMode = data.gameMode;
                 timer = setInterval(() => {
                     if (permission < 2 && config.selfcare.op) client.chat("/minecraft:op @s[type=player]");
-                    else if (gameMode !== 1 && config.selfcare.gamemode) client.chat("/minecraft:gamemode creative");
+                    else if (gameMode !== 1) client.chat("/minecraft:gamemode creative");
                     else if (prefix && config.selfcare.prefix) client.chat('/prefix off');
                     else if (mute && config.selfcare.mute) client.core.run(`essentials:mute ${client.uuid}`);
                     else if (!god && config.selfcare.god) client.core.run(`god ${config.user.name} on`);

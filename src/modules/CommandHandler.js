@@ -25,6 +25,27 @@ class CmdHandler {
                         result = e;
                     }
                     this.konsole.debug(util.inspect(result, { depth: 0, colors: true }));
+                } else if (cmd === 'cloop') {
+                    const type = args[0];
+                    const interval = args[1];
+                    const command = args.slice(2).join(' ');
+                    if (type === 'add') {
+                        if (!interval || !command) return;
+                        this.client.cloop.add(interval, command);
+                        this.konsole.debug(`Added cloop interval ${interval}ms with command ${command}`);
+                    } else if (type === 'remove') {
+                        if (!interval) return;
+                        this.client.cloop.remove(interval);
+                        this.konsole.debug(`Removed cloop interval ${interval}`);
+                    } else if (type === 'list') {
+                        const r = this.client.cloop.list();
+                        this.konsole.debug(r);
+                    } else if (type === 'clear') {
+                        this.client.cloop.clear();
+                        this.konsole.debug('Cleared cloop intervals');
+                    } else {
+                        this.konsole.debug('Invalid cloop command | \n cloop add <interval> <command> \n cloop remove <index> \n cloop list \n cloop clear');
+                    }
                 }
                 return
             }

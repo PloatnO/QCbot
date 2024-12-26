@@ -1,9 +1,13 @@
 const Config = require('../modules/Config')
 const util = require('util')
+const fs = require('fs')
+const path = require('path')
 
 class CmdHandler {
     constructor(context) {
         this.context = context;
+        this.commands = new Set();
+        this.commandPath = `../commands`;
         this.client = context.client;
         this.konsole = context.konsole;
         this.init()
@@ -11,47 +15,63 @@ class CmdHandler {
 
     async init() {
         this.config = await new Config().get();
-        this.client.on('konsole:input', (packet) => {
-            const [command, ...args] = packet.input.split(' ');
-            if (command.startsWith(this.config.konsole.prefix)) {
-                const cmd = command.slice(this.config.konsole.prefix.length);
-                const client = this.client;
-                const context = this.context;
-                if (cmd === 'eval') {
-                    let result;
-                    try {
-                        result = eval(args.join(' '))
-                    } catch (e) {
-                        result = e;
-                    }
-                    this.konsole.debug(util.inspect(result, { depth: 0, colors: true }));
-                } else if (cmd === 'cloop') {
-                    const type = args[0];
-                    const interval = args[1];
-                    const command = args.slice(2).join(' ');
-                    if (type === 'add') {
-                        if (!interval || !command) return;
-                        this.client.cloop.add(interval, command);
-                        this.konsole.debug(`Added cloop interval ${interval}ms with command ${command}`);
-                    } else if (type === 'remove') {
-                        if (!interval) return;
-                        this.client.cloop.remove(interval);
-                        this.konsole.debug(`Removed cloop interval ${interval}`);
-                    } else if (type === 'list') {
-                        const r = this.client.cloop.list();
-                        this.konsole.debug(r);
-                    } else if (type === 'clear') {
-                        this.client.cloop.clear();
-                        this.konsole.debug('Cleared cloop intervals');
-                    } else {
-                        this.konsole.debug('Invalid cloop command | \n cloop add <interval> <command> \n cloop remove <index> \n cloop list \n cloop clear');
-                    }
+        const cmdPath = path.join(__dirname, this.commandPath);
+        const files = fs.readdirSync(cmdPath);
+
+        for (const file of files) {
+            const command = await import(`${cmdPath}/${file}`);
+            this.commands.add(command.default);
+        }
+
+        this.client['commandHandler'] = {
+            commands: this.commands
+        }
+        
+        this.client.on('chat', (packet) => {
+            try {
+                const isChipmunk = packet.isChipmunk;
+                const uuid = packet.selector ? snbtToUUID(packet.selector.toString()) : null;
+                const username = uuid ? this.client.players[uuid].name : packet.username.split(' ')[1];
+                const message = isChipmunk ? packet.message : packet.message.replace(/: /, '');
+               
+                const context = {
+                    username: username,
+                    uuid: uuid,
+                    command: message.split(' ')[0],
+                    message: message.split(' ').slice(1).join(' ').trim()
                 }
-                return
-            }
-            try {this.client.chat(packet.input)} catch {}
-        })
+
+                this.executeCommand(context)
+            } catch {}
+        });
+    }
+
+    async executeCommand(context) {
+        const prefixes = this.client.config.user.prefixes;
+        const commandName = prefixes.find(prefix => context.command.startsWith(prefix))
+            ? context.command.slice(prefixes.find(prefix => context.command.startsWith(prefix)).length)
+            : null;
+        if (!commandName) return;
+        const command = Array.from(this.commands).find(cmd => cmd.name === commandName || cmd.aliases.includes(commandName));
+        if (!command) return;
+        context['client'] = this.client, context['konsole'] = this.konsole,
+        command.execute(context);
     }
 }
 
+function snbtToUUID(snbt) {
+    try {
+        if (/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(snbt)) {
+            return snbt;
+        }
+
+        const parts = snbt.split(',').map(part => {
+            const int = parseInt(part, 10);
+            return (int >>> 0).toString(16).padStart(8, '0');
+        });
+
+        const uuid = `${parts[0]}-${parts[1].slice(0, 4)}-${parts[1].slice(4)}-${parts[2].slice(0, 4)}-${parts[2].slice(4)}${parts[3]}`;
+        return uuid;
+    } catch {}
+}
 module.exports = CmdHandler;

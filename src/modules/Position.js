@@ -1,6 +1,7 @@
 class Position {
     constructor(context) {
         this.client = context.client
+        this.konsole = context.konsole
         this.init()
     }
 

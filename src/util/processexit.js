@@ -1,15 +1,8 @@
-const Konsole = require('./Konsole');
+const Konsole = require('../modules/Konsole');
 
 module.exports = class Test {
     constructor() {
         this.init();
-    }
-
-    console = {
-        log: () => {},
-        warn: () => {},
-        error: () => {},
-        debug: () => {}
     }
 
     init() {

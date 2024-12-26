@@ -1,9 +1,54 @@
 user:
-  name: "player"
+  name: "q(w)b"
 
-server:
-  host: play.kaboom.pw
-  port: 25565
+servers:
+  kaboom: 
+    host: play.kaboom.pw
+    port: 25565
+    
+  chipmunk:
+    host: chipmunk.land
+    port: 25565
+
+  chayapakboom:
+    host: chayapak.chipmunk.com
+    port: 25565
+    
+  
 
 konsole:
   prefix: .
+
+palette:
+  mainColor: "#cf8ccb"
+  secondaryColor: "#77519c"
+  tertiaryColor: "#bd0259"
+  quaternaryColor: "#7b76b0"
+  quinaryColor: '#b69bcf'
+  senaryColor: '#94475a'
+  septenaryColor: '#96082e'
+  octonaryColor: '#99c995'
+
+
+core:
+  block: repeating_command_block
+  type: destroy
+  name: {"translate":"<--[%s]-->","color":"#ff99dd","with":[{"text":"Object Core","color":"#77519c"}]}
+  start:
+    x: 0
+    y: 0
+    z: 0
+  end:
+    x: 15
+    y: 5
+    z: 15
+  offset: -3
+
+selfcare:
+  mute: true
+  gamemode: true
+  op: true
+  icu: true
+  god: true
+  nick: true
+  username: true

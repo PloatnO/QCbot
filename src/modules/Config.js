@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const Konsole = require('../util/Konsole');
+const Konsole = require('./Konsole');
 const util = require('util');
 
 const ConfigPath = '../../config.yaml';

@@ -1,39 +1,9 @@
-const readline = require('readline');
-
-let rl;
-
 class Konsole {
-  constructor(context) {
-      if (!context) return;
-      if (!rl) {
-       rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        prompt: `\x1b[30m>\x1b[92m `,
-       });
-      }
-      this.rl = rl;
-      this.client = context
-      this.init();
-   }
-
-  async init() {
-      this.rl.removeAllListeners('line');
-      this.rl.on('line', (input) => {
-        if (this.client) {
-          this.client.emit('konsole:input', {
-            input: input,
-          });
-        }
-        this.rl.prompt();
-      });
-  }
+  constructor() {}
 
   refreshLine(...args) {
     try {
-      rl.output.write("\x1b[2K\r"+Konsole.COLORS.RESET);
       process.stdout.write(`${Konsole.COLORS.RESET}${args.toString()}${Konsole.COLORS.RESET}\n`);
-      rl._refreshLine();
     } catch {}
   }
 
@@ -53,7 +23,7 @@ class Konsole {
     this.refreshLine(`${Konsole.CUSTCOLORS.BOLD}${Konsole.COLORS.BRIGHT_BLACK}[${Konsole.COLORS.BRIGHT_RED}E${Konsole.COLORS.BRIGHT_BLACK}]${Konsole.COLORS.RESET} ${args.toString()}${Konsole.COLORS.RESET}`);
   }
 
-    static COLORS = {
+  static COLORS = {
     BLACK: "\x1b[30m",
     RED: "\x1b[31m",
     GREEN: "\x1b[32m",
@@ -61,7 +31,6 @@ class Konsole {
     BLUE: "\x1b[34m",
     MAGENTA: "\x1b[35m",
     CYAN: "\x1b[36m",
-    WHITE: "\x1b[37m",
     BRIGHT_BLACK: "\x1b[90m",
     BRIGHT_RED: "\x1b[38;2;255;0;0m",
     BRIGHT_GREEN: "\x1b[92m",
@@ -71,9 +40,9 @@ class Konsole {
     BRIGHT_CYAN: "\x1b[96m",
     BRIGHT_WHITE: "\x1b[97m",
     RESET: "\x1b[0m"
-    };
+  };
 
-    static CUSTCOLORS = {
+  static CUSTCOLORS = {
     BOLD: "\x1b[1m",
     DIM: "\x1b[2m",
     UNDERLINE: "\x1b[4m",
@@ -86,7 +55,7 @@ class Konsole {
     RESET_BLINK: "\x1b[25m",
     RESET_INVERSE: "\x1b[27m",
     RESET_HIDDEN: "\x1b[28m"
-    };
+  };
 }
 
 module.exports = Konsole;

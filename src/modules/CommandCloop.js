@@ -4,16 +4,18 @@ class CommandCloop {
         this.konsole = context.konsole;
         this.ids = []
 
-        this.client['cloop'] = {
+        if (!this.client['cloop']) {
+            this.client['cloop'] = {
             add: (...args) => this.add(...args),
             remove: (...args) => this.remove(...args),
             list: (...args) => this.list(...args),
             clear: (...args) => this.clear(...args)
+            }
         }
     }
 
     add(interval, command) {
-        //if (interval < 10) interval = 50;
+        if (interval < 10) interval = 50;
         const id = setInterval(() => {
             this.client.core.run(command)
         }, interval);

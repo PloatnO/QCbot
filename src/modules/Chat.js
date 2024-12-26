@@ -1,4 +1,5 @@
-const ChatMessage = require('prismarine-chat')('1.20.4')
+const { MessageBuilder } = require('prismarine-chat')('1.20.4')
+const packageJson = require('../../package.json');
 
 class Chat {
     constructor(context) {
@@ -8,37 +9,41 @@ class Chat {
     }
 
     async init() {
-        this.client.on('custom_systemChat', (packet) => {
-            if (packet.includes("Command set:")) return
-            this.konsole.debug(packet)
+        this.client.on('login',()=>{
+            this.konsole.log(`Client ( "${this.client.username}"  )-(  "${this.client.uuid}"  ) Connected ${this.client.config.host}:${this.client.config.port}`)
         })
 
-        this.client.on('custom_playerChat',(packet)=>{
-            this.konsole.debug(packet)
+        this.client.on('core:started',()=>{
+            const version = packageJson.version;
+
+            this.client.core.tellraw(
+                new MessageBuilder().setTranslate("%sQ%sw%sb Made by ImGloriz/PloatnO\n%s%s%s\n%s%s%s").setColor(this.client.config.scheme.mainColor).addWith(
+                    //Start Message
+                    new MessageBuilder().setText("| ").setColor(this.client.config.scheme.quaternaryColor), 
+                    new MessageBuilder().setText("(").setColor(this.client.config.scheme.secondaryColor).setBold(true),
+                    new MessageBuilder().setText(")").setColor(this.client.config.scheme.secondaryColor).setBold(true),
+
+                    //Version Info
+                    new MessageBuilder().setText("| ").setColor(this.client.config.scheme.quaternaryColor),
+                    new MessageBuilder().setText("Version: ").setColor(this.client.config.scheme.mainColor),
+                    new MessageBuilder().setText(version).setColor(this.client.config.scheme.quinaryColor),
+
+                    //Prefix Info
+                    new MessageBuilder().setText("| ").setColor(this.client.config.scheme.quaternaryColor),
+                    new MessageBuilder().setText("Prefixes: ").setColor(this.client.config.scheme.mainColor),
+                    new MessageBuilder().setText(`[${this.client.config.user.prefixes.join(', ')}]`).setColor(this.client.config.scheme.quinaryColor),
+                ).toJSON()
+            )
         })
 
-        this.client.on('custom_profilelessChat',(packet)=>{
-            this.konsole.debug(packet)
+        this.client.on('error',(err)=>{
+            this.konsole.error(err)
         })
 
-        this.client.on('custom_actionBar',(packet)=>{
-            if (this.client.options.actionbar === true) {
-                this.konsole.debug(packet)
-            }
+        this.client.on('end', (err) => {
+            this.konsole.error(err)
+            
         })
-
-        this.client.on('custom_title',(packet)=>{
-            if (this.client.options.title === true) {
-                this.konsole.debug(packet)
-            }
-        })
-
-        this.client.on('custom_bossBar',(packet)=>{
-            if (this.client.options.bossbar === true) {
-                this.konsole.debug(packet)
-            }
-        })
-        
     }
 }
 

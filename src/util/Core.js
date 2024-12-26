@@ -26,6 +26,9 @@ class Core {
         this.currentBlockRelative = { x: 0, y: this.core.placement.start.y, z: 0 }
 
         this.refill()
+        setTimeout(() => {
+            this.client.emit('core:started')
+        }, 150)
     }
 
     refill = async () => {
